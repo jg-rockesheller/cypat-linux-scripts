@@ -78,7 +78,7 @@ for user in users:
 
 
 # remove hacking tools
-while True:
+def remove_hacking_tools():
     remove_pkg_terms = ["hack", "crack", "password"]
     pkgs_to_remove = []
     for pkg_term in remove_pkg_terms:
@@ -96,13 +96,12 @@ while True:
         print(pkgs_to_remove)
         if input().lower() in ["yes", "y", "ye"]:
             os.system("apt purge -y" + " ".join(pkgs_to_remove))
-            break
         else:
-            if input("redo? [y/N]").lower() not in ["yes", "ye", "y"]: break
+            if not input("redo? [y/N]").lower() not in ["yes", "ye", "y"]: return
 
 
 # check for uncessary files
-while True:
+def remove_unnecessary_files():
     remove_file_extensions = ["mp3", "mp4", "mkv", "mov", "png", "jpg", "jpeg"]
     files_to_remove = []
     for file_ext in remove_file_extensions:
@@ -119,10 +118,9 @@ while True:
     print("\nremove the following files: [y/N]")
     print(files_to_remove)
     if input().lower() in ["yes", "y", "ye"]:
-        os.system("rm" + " ".join(pkgs_to_remove))
-        break
+        os.system("rm" + " ".join(files_to_remove))
     else:
-        if input("redo? [y/N]").lower() not in ["yes", "ye", "y"]: break
+        if not input("redo? [y/N]").lower() not in ["yes", "ye", "y"]: return
 
 
 # enable ufw / clamav / rkhunter

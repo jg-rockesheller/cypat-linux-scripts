@@ -6,7 +6,7 @@ import re
 # script for states round 2024-2025 season
 
 
-packages = ["ufw", "clamav", "libpam-cracklib", "rkhunter"]
+packages = ["ufw", "clamav", "libpam-cracklib", "rkhunter", "gpasswd"]
 
 
 os.system("apt update -y && apt upgrade -y")
@@ -73,8 +73,8 @@ for user in users:
         os.system("userdel -r " + user)
         continue
     if input("should " + user + " have sudo privleges? [Y/n] ").lower() in ["n", "no"]:
-        os.system("usermod -rG adm " + user)
-        os.system("usermod -rG sudo " + user)
+        os.system("gpasswd --delete " + user + " adm")
+        os.system("gpasswd --delete " + user + " sudo")
 
 
 # remove hacking tools

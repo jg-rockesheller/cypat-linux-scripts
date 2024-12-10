@@ -62,19 +62,12 @@ os.system("cp --no-preserve=mode,ownership ./login.defs /etc/login.defs")
 os.system("rm ./login.defs")
 
 
-# user/group mamagement
-users = []
-for line in subprocess.check_output("cat /etc/passwd", shell = True, text = True).split("\n"):
-    if not re.search(".+:.+:.+", line): continue
-    if int(re.split(":", line)[2]) >= 1000 and int(re.split(":", line)[2]) <= 2000:
-        users += [re.split(":", line)[0]]
-for user in users:
-    if input("should " + user + " have access to the computer? [Y/n] ").lower() in ["n", "no"]:
-        os.system("userdel -r " + user)
-        continue
-    if input("should " + user + " have sudo privleges? [Y/n] ").lower() in ["n", "no"]:
-        os.system("gpasswd --delete " + user + " adm")
-        os.system("gpasswd --delete " + user + " sudo")
+# enable ufw / clamav / rkhunter
+os.system("ufw enable")
+os.system("sudo freshclam")
+os.system("sudo clamscan")
+os.system("rkhunter --update")
+os.system("rkhunter -c > rkhunter.log")
 
 
 # remove hacking tools
@@ -106,7 +99,7 @@ def remove_unnecessary_files():
     files_to_remove = []
     for file_ext in remove_file_extensions:
         try:
-            for file in subprocess.check_output("find /home -name \"*" + file + "\"", shell = True, text = True).split("\n"):
+            for file in subprocess.check_output("find /home -name \"*" + file_ext + "\"", shell = True, text = True).split("\n"):
                 if file_ext == "": continue
                 print("keep the following file? [Y/n]")
                 print(file)
@@ -123,9 +116,16 @@ def remove_unnecessary_files():
         if not input("redo? [y/N]").lower() not in ["yes", "ye", "y"]: return
 
 
-# enable ufw / clamav / rkhunter
-os.system("ufw enable")
-os.system("sudo freshclam")
-os.system("sudo clamscan")
-os.system("rkhunter --update")
-os.system("rkhunter -c > rkhunter.log")
+# user/group mamagement
+users = []
+for line in subprocess.check_output("cat /etc/passwd", shell = True, text = True).split("\n"):
+    if not re.search(".+:.+:.+", line): continue
+    if int(re.split(":", line)[2]) >= 1000 and int(re.split(":", line)[2]) <= 2000:
+        users += [re.split(":", line)[0]]
+for user in users:
+    if input("should " + user + " have access to the computer? [Y/n] ").lower() in ["n", "no"]:
+        os.system("userdel -r " + user)
+        continue
+    if input("should " + user + " have sudo privleges? [Y/n] ").lower() in ["n", "no"]:
+        os.system("gpasswd --delete " + user + " adm")
+        os.system("gpasswd --delete " + user + " sudo")

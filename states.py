@@ -6,15 +6,11 @@ import re
 # script for states round 2024-2025 season
 
 
-packages = ["ufw", "clamav", "libpam-cracklib"]
+packages = ["ufw", "clamav", "libpam-cracklib", "rkhunter"]
 
 
 os.system("apt update -y && apt upgrade -y")
 os.system("apt install -y " + " ".join(packages))
-
-
-# enable ufw
-os.system("ufw enable")
 
 
 # pam password settings
@@ -94,11 +90,44 @@ while True:
                 if input().lower() in ["n", "no"]: pkgs_to_remove += [re.split(r"\s", pkg)[2]]
         except:
             print("no " + pkg_term + "ing tools found")
-            pkgs_to_remove = list(set(pkgs_to_remove))
-            print("\nremove the following packages: [y/N]")
-            print(pkgs_to_remove)
-            if input().lower() in ["yes", "y", "ye"]:
-                os.system("apt purge -y" + " ".join(pkgs_to_remove))
-                break
-            else:
-                if input("redo? [y/N]").lower() not in ["yes", "ye", "y"]: break
+
+        pkgs_to_remove = list(set(pkgs_to_remove))
+        print("\nremove the following packages: [y/N]")
+        print(pkgs_to_remove)
+        if input().lower() in ["yes", "y", "ye"]:
+            os.system("apt purge -y" + " ".join(pkgs_to_remove))
+            break
+        else:
+            if input("redo? [y/N]").lower() not in ["yes", "ye", "y"]: break
+
+
+# check for uncessary files
+while True:
+    remove_file_extensions = ["mp3", "mp4", "mkv", "mov", "png", "jpg", "jpeg"]
+    files_to_remove = []
+    for file_ext in remove_file_extensions:
+        try:
+            for file in subprocess.check_output("find /home -name \"*" + file + "\"", shell = True, text = True).split("\n"):
+                if file_ext == "": continue
+                print("keep the following file? [Y/n]")
+                print(file)
+                if input().lower() in ["n", "no"]: files_to_remove += [file]
+        except:
+            print("no ." + file_ext + " files found")
+
+    files_to_remove = list(set(files_to_remove))
+    print("\nremove the following files: [y/N]")
+    print(files_to_remove)
+    if input().lower() in ["yes", "y", "ye"]:
+        os.system("rm" + " ".join(pkgs_to_remove))
+        break
+    else:
+        if input("redo? [y/N]").lower() not in ["yes", "ye", "y"]: break
+
+
+# enable ufw / clamav / rkhunter
+os.system("ufw enable")
+os.system("sudo freshclam")
+os.system("sudo clamscan")
+os.system("rkhunter --update")
+os.system("rkhunter -c > rkhunter.log")

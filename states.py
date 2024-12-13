@@ -72,7 +72,7 @@ os.system("rkhunter -c > rkhunter.log")
 
 # remove hacking tools
 def remove_hacking_tools():
-    remove_pkg_terms = ["hack", "crack", "password"]
+    remove_pkg_terms = ["hack", "crack", "password", "game"]
     pkgs_to_remove = []
     for pkg_term in remove_pkg_terms:
         try:
@@ -95,11 +95,11 @@ def remove_hacking_tools():
 
 # check for uncessary files
 def remove_unnecessary_files():
-    remove_file_extensions = ["mp3", "mp4", "mkv", "mov", "png", "jpg", "jpeg"]
+    remove_file_extensions = ["mp3", "mp4", "mkv", "mov", "png", "jpg", "jpeg", "gif", "avi", "wav", "wma", "aac"]
     files_to_remove = []
     for file_ext in remove_file_extensions:
         try:
-            for file in subprocess.check_output("find /home -name \"*" + file_ext + "\"", shell = True, text = True).split("\n"):
+            for file in subprocess.check_output("find / -name \"*" + file_ext + "\"", shell = True, text = True).split("\n"):
                 if file_ext == "": continue
                 print("keep the following file? [Y/n]")
                 print(file)
@@ -129,3 +129,9 @@ for user in users:
     if input("should " + user + " have sudo privleges? [Y/n] ").lower() in ["n", "no"]:
         os.system("gpasswd --delete " + user + " adm")
         os.system("gpasswd --delete " + user + " sudo")
+
+# permissions
+os.system("chown root:root /home")
+os.system("chmod 755 /home")
+os.system("chown root:root /root")
+os.system("chmod 700 /root")
